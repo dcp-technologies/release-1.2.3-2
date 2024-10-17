@@ -1,0 +1,142 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ printf "%s-cm" (include "common.names.fullname" .) }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+data:
+  application.yaml: |
+    language: EN # FR, EN
+    logging:
+      {{- if .Values.hidelog }}
+      pattern:
+        console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+      {{- end }}
+      level:
+        org.springframework: ERROR
+        com.dcp: {{.Values.loglevel}}
+    server:
+      servlet:
+        context-path: /dcp
+      port:
+        {{ .Values.service.ports.http }}
+      {{- if .Values.security.ssl.enabled }}
+      tomcat:
+        accept-count: 200
+        threads:
+          max: 800
+          min-spare: 200
+      ssl:
+        {{- if .Values.certmanager.enabled }}
+        key-store: /certsm/{{ .Values.security.ssl.keystorefilename}}
+        {{- else }}
+        key-store: {{ .Values.security.ssl.keystorepath}}
+        {{- end }}
+        key-store-password: {{ .Values.security.ssl.keystorePassword | quote }}
+        key-password: {{ .Values.security.ssl.keystorePassword | quote }}
+      {{- end }}
+    #security:
+    #  config.authcode-flow: true
+    #keycloak:
+    #  realm: teama
+    #  auth-server-url: ""
+    #  resource: ""
+    #keycloak.ssl-required=external
+    #keycloak.resource=api-1
+    #keycloak.bearer-only=true
+    #keycloak.public-client=true
+    management:
+      endpoint:
+        health:
+          show-details: always
+      endpoints:
+        web:
+          exposure:
+            include: health,info,prometheus,metrics
+
+    spring:
+      main:
+        allow-bean-definition-overriding: true
+        allow-circular-references: true
+        banner-mode: off
+      profiles:
+        active:
+          #- ${ACTIVE_SPRING_PROFILE:dev}
+          - jwtauth
+      application:
+        name: global-api
+      messages:
+        basename: messages
+
+      postgres:
+        hikari:
+          connectionTimeout: {{ .Values.postgres.connectionTimeout }}
+          minimumIdle: 10 #minimum number of idle connections maintained by HikariCP in a connection pool
+          maximumPoolSize: {{ .Values.postgres.maximumPoolSize }}
+          idleTimeout: 10000 #maximum idle time for connection
+          maxLifetime: 1000 # maximum lifetime in milliseconds of a connection in the pool after it is closed.
+          autoCommit: true #default auto-commit behavior.
+        jdbcUrl: jdbc:postgresql://{{.Values.postgres.servicename}}.{{.Values.namespaceOverride}}.{{.Values.clusterDomain}}:{{.Values.postgres.port}}/{{.Values.postgres.database}}
+        username: {{ .Values.postgres.username}}
+        password: {{ .Values.postgres.password}}
+        driverClassName: org.postgresql.Driver
+
+      servlet:
+        multipart:
+          max-file-size: -1
+          max-request-size: -1
+
+    version: "{{.Values.version}}"
+    api: https://{{.Values.openshift.route.host}}/dcp/swagger-ui/index.html?urls.primaryName=Authentication
+    stats: {{.Values.master.stats}}
+
+    {{- if .Values.certmanager.enabled }}
+    keystore: /certsm/{{ .Values.security.ssl.keystorefilename}}
+    {{- else }}
+    keystore: {{ .Values.security.ssl.keystorepath }}
+    {{- end }}
+    keystore-password: {{ .Values.security.ssl.keystorePassword }}
+    keyalias:
+    keypassword: {{ .Values.security.ssl.keystorePassword }}
+    
+    {{- if .Values.certmanager.enabled }}
+    truststore: /certsm/{{ .Values.security.ssl.keystorefilename}}
+    {{- else }}
+    truststore: {{ .Values.security.ssl.keystorepath }}
+    {{- end }}
+    truststorepassword: {{ .Values.security.ssl.keystorePassword }}
+
+    dcpkey: 
+    dcphashed: 
+
+    authent: ldap #ldap, db
+    ldaps: ldap #ldapa,ldapb,ldap
+
+    ldap:
+      searchMethod: {{ .Values.ldap.searchMethod }}
+      usercangetattribute: {{ .Values.ldap.usercangetattribute }}
+      secured : {{ .Values.ldap.secured }}
+      factory: {{ .Values.ldap.factory }}
+      url: {{ .Values.ldap.url }}
+      principal: {{ .Values.ldap.principal }}
+      givenname: {{ .Values.ldap.givenname }}
+      shortname: {{ .Values.ldap.shortname }}
+      email: {{ .Values.ldap.email }}
+      group: {{ .Values.ldap.group }}
+      uid: {{ .Values.ldap.uid }}
+      viewallattributes: {{ .Values.ldap.viewallattributes }}
+      filtersearch: {{ .Values.ldap.filtersearch }}
+      scopelevel: {{ .Values.ldap.scopelevel }}
+      authenticationtype: {{ .Values.ldap.authenticationtype }}
+      bindDnAttribue: bindDn
+      bindPasswordnAttribue: bindPassword
+      bindDn: {{ .Values.ldap.bindDn }}
+      bindPassword: {{ .Values.ldap.bindPassword }}
+      attributes: {{ .Values.ldap.attributes }}
+      bindfiltersearch: {{ .Values.ldap.bindfiltersearch }}

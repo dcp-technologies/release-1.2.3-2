@@ -1,0 +1,42 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: upgrade-cm-123-2
+data:
+  upgrade.sql: |    
+
+    update dcp_images set tag='policy-1.0.0-v5' where name = 'sqlpolicy';
+
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('sparkcluster',true,'DELETE_SPARKCLUSTER_POD');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('sparkmonitoring',true,'DELETE_SPARKMONITORING_POD');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('sparkhistory',true,'DELETE_SPARKHISTORY_POD');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('sparkoperator',true,'DELETE_SPARKOPERATOR_POD');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('notebook',true,'DELETE_NOTEBOOK_POD');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('airflow',true,'DELETE_AIRFLOW_POD');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('sqlcluster',true,'DELETE_SQLCLUSTER_POD');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('sqlqueryweb',true,'DELETE_SQLQUERYWEB_POD');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('ranger',true,'DELETE_SQLPOLICY_POD');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('hms',true,'DELETE_HMSCLUSTER_POD');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('audit',true,'DELETE_AUDITCLUSTER_POD');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('keycloak',true,'DELETE_KEYCLOAK_POD');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('nifi',true,'DELETE_NIFI_POD');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('cache',true,'DELETE_CACHE_POD');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('superset',true,'DELETE_SUPERSET_POD');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('dbt',true,'DELETE_DBT_POD');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('sparkapps',true,'DELETE_SPARKAPPLICATION_POD');
+
+
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('sparkapps_ws',true,'DELETE_SPARKAPPLICATION_POD_WS');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('sparkmonitoring_ws',true,'DELETE_SPARKMONITORING_POD_WS');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('sparkhistory_ws',true,'DELETE_SPARKHISTORY_POD_WS');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('notebook_ws',true,'DELETE_NOTEBOOK_POD_WS');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('airflow_ws',true,'DELETE_AIRFLOW_POD_WS');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('sqlcluster_ws',true,'DELETE_SQLCLUSTER_POD_WS');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('sqlqueryweb_ws',true,'DELETE_SQLQUERYWEB_POD_WS');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('ranger_ws',true,'DELETE_SQLPOLICY_POD_WS');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('hms_ws',true,'DELETE_HMSCLUSTER_POD_WS');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('keycloak_ws',true,'DELETE_KEYCLOAK_POD_WS');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('nifi_ws',true,'DELETE_NIFI_POD_WS');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('cache_ws',true,'DELETE_CACHE_POD_WS');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('superset_ws',true,'DELETE_SUPERSET_POD_WS');
+    insert into dcp_admin_policies(servicename, enabled, policyname) values ('dbt_ws',true,'DELETE_DBT_POD_WS');
